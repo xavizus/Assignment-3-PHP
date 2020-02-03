@@ -85,6 +85,23 @@ class Database
         try {
             $this->pdo->beginTransaction();
             $this->statement = $this->pdo->prepare($sqlStatement);
+            if (is_array($dataToBind)) {
+                foreach ($dataToBind as $key => $data) {
+                    $dataType = PDO::PARAM_STR;
+                    switch (true) {
+                        case \is_null($data):
+                            $dataType = PDO::PARAM_NULL;
+                            break;
+                        case \is_numeric($data):
+                            $dataType = PDO::PARAM_INT;
+                            break;
+                        case is_bool($data):
+                            $dataType = PDO::PARAM_BOOL;
+                            break;
+                    }
+                    $this->statement->bindValue(":$key", $data, $dataType);
+                }
+            }
             $this->statement->execute($dataToBind);
             $this->lastInsertId = $this->pdo->lastInsertId();
             $this->pdo->commit();
