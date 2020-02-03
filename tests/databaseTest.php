@@ -73,12 +73,15 @@ class DatabaseTest extends TestCase
      */
     public function testInsertData($database)
     {
-        $sql = "INSERT INTO users ( firstName, lastName, username, password ) VALUES ( ?, ?, ?, ?)";
+        $sql = "INSERT INTO users ( firstName, lastName, username, password, phoneNumber, creditCard ) 
+        VALUES ( ?, ?, ?, ?, ?, ?)";
         $dataToInsert = array(
             "testFirstName",
             "testLastName",
             "testUsername",
-            "testPassword"
+            "testPassword",
+            "phoneNumber",
+            102003202
         );
 
         $row = $database->query($sql, $dataToInsert);

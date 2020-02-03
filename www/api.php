@@ -24,18 +24,22 @@ try {
 
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
-foreach (array_keys($_GET) as $key) {
-    $className = ucfirst(strtolower($key)) . "API";
-    if (file_exists("classes/api/" . $className . ".class.php")) {
+foreach (array_keys($_GET) as $className) {
+    error_log($className);
+    if (file_exists("classes/api/" . strtolower($className) . ".class.php")) {
+        if (strpos(strToLower($className), "transfer") !== false) {
+            require_once("interface/transaction.interface.php");
+        }
         require_once("classes/api/" . $className . ".class.php");
         $className = '\\API\\' . $className;
         $api = new $className($database);
     } else {
         http_response_code(400);
+        exit;
     }
 }
 
-if (!empty($_GET['transfer']) && $_GET['transfer'] == "true") {
+if (isset($_GET['transfer']) && $_GET['transfer'] == "true") {
     error_log("Vi har fått ett request av typ: $requestMethod och önskad data är " . implode(", ", array_keys($_GET)));
     error_log("Vi har fått följande data i POST: $_POST[formUserId], $_POST[toUserId], $_POST[amount]");
 
@@ -51,7 +55,7 @@ if (!empty($_GET['transfer']) && $_GET['transfer'] == "true") {
     $ID = $api->post($dataToSend);
 
     error_log("ID: $ID");
-} elseif (!empty($_GET['users'])) {
+} elseif (isset($_GET['users'])) {
     $ID2 = $api->get();
     print_r($ID2);
 }

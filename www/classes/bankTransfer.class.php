@@ -2,10 +2,7 @@
 
 namespace BankSystem;
 
-class BankTransfer implements TransferInterface
+class BankTransfer implements TransactionInterface
 {
-    public function transferMoney($fromAccount, $toAccount, $amount)
-    {
-        
-    }
+    
 }

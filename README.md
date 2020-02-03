@@ -11,7 +11,7 @@ Ni ska bygga en bankapplikation. Applikationen ska byggas med PHP, MySQL och lit
 - [ ] En överföring måste felkontrolleras, t ex att mottagaren finns, att det finns tillräckligt med pengar på avsändarens konto osv.
 - [ ] Om ett fel uppstår (t ex att det saknas pengar) ska ni kasta ett exception. Ni måste också kunna hantera exceptions med en try ... catch så att skriptet inte dör.
 - [x] Ni behöver inte visa upp ett kontoutdrag eller liknande på sidan, men i databasen ska man kunna se alla transaktioner som involverar ett visst konto, t ex att Kalle har fått x kr från Olle vid tidpunkten y eller skickat pengar till Lisa vid tidpunkten z. Det som måste finnas på varje rad är alltså sändarens kontonr, mottagarens kontonr, tidpunkt, belopp och ev valuta.
-- [ ] Allt som rör databasen (främst överföringar, tänker jag då) ska ske med hjälp av API-anrop och PDO.
+- [x] Allt som rör databasen (främst överföringar, tänker jag då) ska ske med hjälp av API-anrop och PDO.
 - [ ] Ni ska visa att ni kan använda AJAX, t ex genom att hämta en mottagarlista med AJAX, göra API-anropet som hanterar en överföring eller liknande.
 - [ ] Ni ska visa att ni kan använda dependency injection. Om ni t ex behöver ett databasobjekt för att hämta användare eller skapa en överföring så får det inte finnas dependencies i klassen utan det måste lösas genom att man t ex skickar med databasobjektet till konstruktorn. Typ:
 

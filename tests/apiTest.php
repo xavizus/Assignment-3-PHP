@@ -4,7 +4,7 @@ namespace Tests;
 
 use PHPUnit\Framework\TestCase;
 use BankSystem\Database;
-use API\UsersAPI;
+use API\Users;
 
 class ApiTest extends TestCase
 {
@@ -16,7 +16,7 @@ class ApiTest extends TestCase
     {
         require_once('vendor/autoload.php');
         require_once("www/classes/api/api.class.php");
-        require_once('www/classes/api/usersapi.class.php');
+        require_once('www/classes/api/users.class.php');
         require_once("www/classes/database.class.php");
         $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
         $dotenv->load();
@@ -29,7 +29,7 @@ class ApiTest extends TestCase
         );
         try {
             $this->database = new Database($databaseConfig);
-            $this->api = new UsersAPI($this->database);
+            $this->api = new Users($this->database);
         } catch (\Exception $error) {
             $this->markTestSkipped("Something went wrong while loading database. " .
             $error->getMessage());
@@ -62,7 +62,9 @@ class ApiTest extends TestCase
             'firstName' => "firstName",
             'lastName' => "lastName",
             'username' => "username",
-            'password' => "password"
+            'password' => "password",
+            "phoneNumber" => "phoneNumber",
+            "creditCard" => "0785461616"
         );
         $this->idToRemove = $this->api->post($testData);
 

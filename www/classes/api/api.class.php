@@ -12,13 +12,7 @@ abstract class API
     /**
      * @param \BankSystem\Database
      */
-    public function __construct(\BankSystem\Database $database)
-    {
-        $this->database = $database;
-        $this->database->connect();
-
-        $this->requiredFieldsWithDataTypes = $this->getTableFields();
-    }
+    abstract public function __construct(\BankSystem\Database $database);
 
     /**
      * @param int $id
@@ -46,7 +40,8 @@ abstract class API
 
     /**
      * @param array $data
-     * @return something
+     * @return int
+     * @throws Exception
      */
     
     public function post(array $data)
@@ -90,7 +85,7 @@ abstract class API
     /**
      * @return array
      */
-    private function getTableFields()
+    protected function getTableFields()
     {
         $sql = "DESCRIBE $this->table";
 
