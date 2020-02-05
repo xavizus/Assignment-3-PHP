@@ -21,7 +21,7 @@ require_once('../vendor/autoload.php');
     </select>
     <select name="sendType" id="sendType">
         <option value="bank">Bank</option>
-        <option value="switch">Switch</option>
+        <option value="swish">Swish</option>
         <option value="creditCard">Credit Card</option>
     </select>
     <input type="number" name="amount" id="amount">

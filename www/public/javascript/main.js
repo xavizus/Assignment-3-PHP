@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', event => {
             let selection = document.getElementById('to_account');
             let toSelector = selection.options[selection.selectedIndex];
             switch(sendType) {
-                case "switch":
+                case "swish":
                     to = toSelector.dataset['phonenumber'];
                     break;
                 case "bank":

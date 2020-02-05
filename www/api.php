@@ -63,7 +63,7 @@ if (isset($_GET['Transaction'])) {
                 case ('bank'):
                     $uniqueIdentifier = 'user_accountNumber';
                     break;
-                case ('switch'):
+                case ('swish'):
                     $uniqueIdentifier = 'phoneNumber';
                     break;
                 case ('creditcard'):
