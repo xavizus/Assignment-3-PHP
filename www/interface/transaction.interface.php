@@ -4,13 +4,15 @@ namespace BankSystem;
 
 interface TransactionInterface
 {
-    public function __construct($fromAccount, $toAccount, $amount);
+    public function __construct(\BankSystem\Database $database, $fromAccount, $toAccount, $amount);
 
     public function exceuteTransfer();
 
     public function checkIfEnoughFromAccountGotEnoughAmount();
 
-    public function checkIfCurrencyDiffersFromAccount();
+    public function checkIfCurrencyDiffersFromAccounts();
 
-    public function getRatioDifference();
+    public function getRatioDifference($base, $to_currency);
+
+    public function getUserIdFromUniqueColumn($uniqueIdentifier);
 }

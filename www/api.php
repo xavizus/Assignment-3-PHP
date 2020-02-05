@@ -1,8 +1,8 @@
 <?php
-
+session_start();
 require_once('../vendor/autoload.php');
-require_once("classes/database.class.php");
-require_once('classes/api/api.class.php');
+require_once("./classes/database.class.php");
+require_once('./api/api.class.php');
 
 $dotenv = \Dotenv\Dotenv::createImmutable(__DIR__ . "/../");
 $dotenv->load();
@@ -15,47 +15,122 @@ $databaseConfig = array(
     "dbport" => $_ENV['DBPORT']
 );
 
+$response = [
+    'info' => null,
+    'result' => null
+];
+
 try {
     $database = new BankSystem\Database($databaseConfig);
+    $database->connect();
+    $api = new API\API($database);
 } catch (\Exception $error) {
-    print_r($error->getMessage());
+    http_response_code(503);
+    $response['info']['errorCode'] = $error->getCode();
+    $response['info']['message'] = $error->getMessage();
+    header("Content-Type: application/json; charset=UTF-8");
+    echo json_encode($response);
     exit;
 }
 
-$requestMethod = $_SERVER['REQUEST_METHOD'];
-
-foreach (array_keys($_GET) as $className) {
-    error_log($className);
-    if (file_exists("classes/api/" . strtolower($className) . ".class.php")) {
-        if (strpos(strToLower($className), "transfer") !== false) {
-            require_once("interface/transaction.interface.php");
+if (isset($_GET['Transaction'])) {
+    if (isset($_GET['type'])) {
+        try {
+            require_once('./interface/transaction.interface.php');
+            require_once('./classes/transaction.class.php');
+            require_once('./classes/transfer.class.php');
+            require_once("./classes/$_GET[type]transaction.class.php");
+        } catch (\Exception $error) {
+            http_response_code(503);
+            $response['info']['errorCode'] = $error->gerCode();
+            $response['info']['message'] = "Desired type does not exist!";
+            header("Content-Type: application/json; charset=UTF-8");
+            echo json_encode($response);
+            exit;
         }
-        require_once("classes/api/" . $className . ".class.php");
-        $className = '\\API\\' . $className;
-        $api = new $className($database);
-    } else {
-        http_response_code(400);
-        exit;
+
+        if (empty($_GET['to']) || empty($_GET['amount'])) {
+            $response['info']['errorCode'] = 0;
+            $response['info']['message'] = "Either to, or amount missing";
+            header("Content-Type: application/json; charset=UTF-8");
+            echo json_encode($response);
+            exit;
+        }
+        
+        try {
+            $uniqueIdentifier;
+            switch ($_GET['type']) {
+                case ('bank'):
+                    $uniqueIdentifier = 'user_accountNumber';
+                    break;
+                case ('switch'):
+                    $uniqueIdentifier = 'phoneNumber';
+                    break;
+                case ('creditcard'):
+                    $uniqueIdentifier = 'creditCard';
+                    break;
+                default:
+                    $uniqueIdentifier = null;
+            }
+            if (empty($uniqueIdentifier)) {
+                throw new Exception("Missing identifyer");
+            }
+            $transactionClass = 'BankSystem\\' . ucfirst($_GET['type']) . 'Transaction';
+            $transaction = new $transactionClass(
+                $database,
+                $_SESSION[$uniqueIdentifier],
+                $_GET['to'],
+                (int)$_GET['amount']
+            );
+            $transfer = new BankSystem\Transfer($transaction);
+            $transfer->transferPayment();
+            $response['info']['code'] = "OK";
+            $response['result'] = "The transfer were successfull!";
+            header("Content-Type: application/json; charset=UTF-8");
+            echo json_encode($response);
+            exit;
+        } catch (\Exception $error) {
+            $response['info']['errorCode'] = 0;
+            $response['info']['message'] = $error->getMessage();
+            if ($error->getCode() == 1337) {
+                $response['img'] = "<img src='./public/images/money-is-no-more.jpg'><br>";
+            }
+            header("Content-Type: application/json; charset=UTF-8");
+            echo json_encode($response);
+            exit;
+        } catch (\ArgumentCountError $error) {
+            $response['info']['errorCode'] = 0;
+            $response['info']['message'] = "Missing Arguments!";
+            header("Content-Type: application/json; charset=UTF-8");
+            echo json_encode($response);
+            exit;
+        }
     }
 }
 
-if (isset($_GET['transfer']) && $_GET['transfer'] == "true") {
-    error_log("Vi har fått ett request av typ: $requestMethod och önskad data är " . implode(", ", array_keys($_GET)));
-    error_log("Vi har fått följande data i POST: $_POST[formUserId], $_POST[toUserId], $_POST[amount]");
+if (isset($_GET['getAllUsers'])) {
+    try {
+        $data = $api->getAllUsers($_SESSION['user_id']);
+        echo json_encode($data);
+    } catch (\Exception $error) {
+        echo $error->getMessage();
+    }
+}
 
-    $dataToSend = array(
-        "transaction_id" => null,
-        "amount" => $_POST['amount'],
-        "from_user_accountNumber" => $_POST['formUserId'],
-        "to_user_accountNumber" => $_POST['toUserId'],
-        "date" => time(),
-        "currency" => "SEK"
-    );
+if (isset($_GET['getBalanceAndCurrencyByUserId'])) {
+    try {
+        $data = $api->getBalanceAndCurrencyByUserId($_SESSION['user_id']);
+        echo json_encode($data);
+    } catch (\Exception $error) {
+        echo json_encode($error->getMessage());
+    }
+}
 
-    $ID = $api->post($dataToSend);
-
-    error_log("ID: $ID");
-} elseif (isset($_GET['users'])) {
-    $ID2 = $api->get();
-    print_r($ID2);
+if (isset($_GET['getCurrentUserData'])) {
+    if (!isset($_SESSION['user_accountNumber'])) {
+        echo "You are not a vaild user";
+        exit;
+    }
+    $data = $api->getCurrentUserData($_SESSION['user_id']);
+    echo json_encode($data);
 }
