@@ -8,7 +8,7 @@ interface TransactionInterface
 
     public function exceuteTransfer();
 
-    public function checkIfEnoughFromAccountGotEnoughAmount();
+    public function checkIfUserGotEnoughMoneyForTransfer();
 
     public function checkIfCurrencyDiffersFromAccounts();
 

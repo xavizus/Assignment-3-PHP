@@ -33,7 +33,7 @@ class Transaction
 
     public function exceuteTransfer()
     {
-        $enoughMoney = $this->checkIfEnoughFromAccountGotEnoughAmount();
+        $enoughMoney = $this->checkIfUserGotEnoughMoneyForTransfer();
         if (!$enoughMoney) {
             throw new \Exception("You are broke as fuck!", 1337);
         }
@@ -87,7 +87,7 @@ class Transaction
         return $enoughMoney - $this->from_amount;
     }
 
-    public function checkIfEnoughFromAccountGotEnoughAmount()
+    public function checkIfUserGotEnoughMoneyForTransfer()
     {
         $sql = "SELECT balance.balance
         FROM users
