@@ -64,15 +64,12 @@ class API
         if (!empty($exceptThisId)) {
             $sql .= " WHERE user_id != ?";
         }
-
         $statement = $this->database->query($sql, [$exceptThisId]);
 
         if ($statement == 0) {
             throw new \Exception("There are no users! \u{1F631}");
         }
-
         $data = $this->database->getFetchedAll();
-
         return $data;
     }
 }
