@@ -52,6 +52,9 @@ class Database
         if (empty($dbport)) {
             $dbport = 3306;
         }
+        /**
+         * HMMM WHERE ARE $DBNAME COMING FROM?!
+         */
         $this->dataSourceName = "mysql:host=$dbhost;port=$dbport;dbname=$dbname";
         $this->password = $password;
         $this->user = $username;

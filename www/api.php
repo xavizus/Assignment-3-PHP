@@ -115,6 +115,7 @@ if (isset($_GET['Transaction'])) {
 if (isset($_GET['getAllUsers'])) {
     try {
         $data = $api->getAllUsers($_SESSION['user_id']);
+        header("Content-Type: application/json; charset=UTF-8");
         echo json_encode($data);
     } catch (\Exception $error) {
         echo $error->getMessage();
@@ -124,6 +125,7 @@ if (isset($_GET['getAllUsers'])) {
 if (isset($_GET['getBalanceAndCurrencyByUserId'])) {
     try {
         $data = $api->getBalanceAndCurrencyByUserId($_SESSION['user_id']);
+        header("Content-Type: application/json; charset=UTF-8");
         echo json_encode($data);
     } catch (\Exception $error) {
         echo json_encode($error->getMessage());

@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', event => {
     populateToAccount();
     populateProfile();
     document.addEventListener('click', (event) => {
-        event.preventDefault()
+        event.preventDefault();
         event.stopPropagation();
         if(event.target.id == "sendMoney") {
             let sendType = document.getElementById('sendType').value;
