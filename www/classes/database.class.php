@@ -10,7 +10,8 @@ class Database
         "dbhost",
         "dbname",
         "username",
-        "password"
+        "password",
+        "dbport"
     );
 
     private $dataSourceName;
@@ -24,6 +25,7 @@ class Database
         PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES   => false,
+        PDO::ATTR_TIMEOUT            => 5
     ];
     /**
      * @param array $databaseConfig
@@ -47,10 +49,8 @@ class Database
         } catch (\Exception $error) {
             throw new \Exception("Error while loading configurations: " . $error->getMessage());
         }
-        if (empty($databaseConfig['dbport'])) {
+        if (empty($dbport)) {
             $dbport = 3306;
-        } else {
-            $dbport = $databaseConfig['dbport'];
         }
         $this->dataSourceName = "mysql:host=$dbhost;port=$dbport;dbname=$dbname";
         $this->password = $password;
@@ -65,13 +65,10 @@ class Database
     public function connect()
     {
         try {
-            /*
             if ($this->pdo instanceof \PDO) {
                 return true;
-            }*/
-            error_log(print_r([$this->dataSourceName, $this->user, $this->password, $this->options],true));
+            }
             $this->pdo = new \PDO($this->dataSourceName, $this->user, $this->password, $this->options);
-            error_log("bye");
             return true;
         } catch (\PDOException $error) {
             throw new \Exception("An error occured: " . $error->getMessage());

@@ -59,7 +59,7 @@ class Transaction
             $this->to_amount = $this->from_amount;
         }
 
-        $sql =  "CALL createTransfer( 
+        $sql = "CALL createTransfer( 
             :amount_from, 
             :amount_to, 
             :from_user_id, 
@@ -80,11 +80,11 @@ class Transaction
         
         $rows = $this->database->query($sql, $preparedArray);
 
-        if ($rows == 3) {
-            return true;
-        } else {
+        if ($rows != 3) {
             return false;
         }
+
+        return $enoughMoney - $this->from_amount;
     }
 
     public function checkIfEnoughFromAccountGotEnoughAmount()
@@ -102,7 +102,7 @@ class Transaction
         }
         $data = $this->database->getFetchedRow();
         if ($data['balance'] >= $this->from_amount) {
-            return true;
+            return $data['balance'];
         } else {
             return false;
         }

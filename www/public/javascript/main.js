@@ -1,7 +1,6 @@
 let URL = `${location.protocol}//${window.location.host}`;
 let APIURL = `${URL}/api.php`;
 document.addEventListener('DOMContentLoaded', event => {
-
     populateToAccount();
     populateProfile();
     document.addEventListener('click', (event) => {
@@ -33,14 +32,11 @@ document.addEventListener('DOMContentLoaded', event => {
             .then(response => response.json())
             .then(result => {
                 if (result.info.code == "OK") {
-                    if(confirm("YOU HAVE SUCESSFULLY TRANSFERD MONEY!")) {
-                        window.location.replace(URL);
-                    } else {
-                        window.location.replace(URL);
-                    }
+                    document.getElementById('message').innerHTML = "The transaction went OK";
+                    document.getElementById('balance').textContent = result.result.newBalance;
                 }
                 else if(typeof result.img !== 'undefined') {
-                    document.getElementById('message').innerHTML= result.img;
+                    document.getElementById('message').innerHTML = result.img;
                     document.getElementById('message').append(result.info.message);
                 }
                 else {

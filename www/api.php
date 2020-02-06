@@ -36,13 +36,17 @@ try {
 if (isset($_GET['Transaction'])) {
     if (isset($_GET['type'])) {
         try {
+            $sanitizedType = filter_var($_GET['type'], FILTER_SANITIZE_STRING);
             require_once('./interface/transaction.interface.php');
             require_once('./classes/transaction.class.php');
             require_once('./classes/transfer.class.php');
-            require_once("./classes/$_GET[type]transaction.class.php");
+            if (!file_exists("./classes/$sanitizedType" . "transaction.class.php")) {
+                throw new \Exception("Could not find file", 0);
+            }
+            require_once("./classes/$sanitizedType" . "transaction.class.php");
         } catch (\Exception $error) {
             http_response_code(503);
-            $response['info']['errorCode'] = $error->gerCode();
+            $response['info']['errorCode'] = $error->getCode();
             $response['info']['message'] = "Desired type does not exist!";
             header("Content-Type: application/json; charset=UTF-8");
             echo json_encode($response);
@@ -59,7 +63,7 @@ if (isset($_GET['Transaction'])) {
         
         try {
             $uniqueIdentifier;
-            switch ($_GET['type']) {
+            switch (strtolower($_GET['type'])) {
                 case ('bank'):
                     $uniqueIdentifier = 'user_accountNumber';
                     break;
@@ -83,9 +87,9 @@ if (isset($_GET['Transaction'])) {
                 (int)$_GET['amount']
             );
             $transfer = new BankSystem\Transfer($transaction);
-            $transfer->transferPayment();
+            $newBalance = $transfer->transferPayment();
             $response['info']['code'] = "OK";
-            $response['result'] = "The transfer were successfull!";
+            $response['result']['newBalance'] = $newBalance;
             header("Content-Type: application/json; charset=UTF-8");
             echo json_encode($response);
             exit;
